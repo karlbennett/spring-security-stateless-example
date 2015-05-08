@@ -20,12 +20,11 @@ public class HomePage {
         return driver.getTitle();
     }
 
-    public boolean isSignedIn() {
+    public String signedInUser() {
         try {
-            driver.findElement(By.id("signed-in-username"));
-            return true;
+            return driver.findElement(By.id("signed-in-username")).getText();
         } catch (NoSuchElementException e) {
-            return false;
+            return "The user is not signed in.";
         }
     }
 }

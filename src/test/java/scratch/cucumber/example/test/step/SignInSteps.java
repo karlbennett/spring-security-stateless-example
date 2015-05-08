@@ -1,5 +1,6 @@
 package scratch.cucumber.example.test.step;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -53,8 +54,8 @@ public class SignInSteps {
         assertThat(homePage.getTitle(), containsString("Home Page"));
     }
 
-    @Then("^the user should be signed in$")
-    public void the_user_should_be_signed_in() {
-        assertThat(homePage.isSignedIn(), equalTo(true));
+    @And("^the user should be signed in as \"([^\"]*)\"$")
+    public void the_user_should_be_signed_in_as(String username) {
+        assertThat(homePage.signedInUser(), equalTo(username));
     }
 }
