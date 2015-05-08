@@ -20,7 +20,7 @@ public class HomePage {
         return driver.getTitle();
     }
 
-    public String signedInUser() {
+    public String signedInUsername() {
         try {
             return driver.findElement(By.id("signed-in-username")).getText();
         } catch (NoSuchElementException e) {

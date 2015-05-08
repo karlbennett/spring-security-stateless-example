@@ -56,6 +56,6 @@ public class SignInSteps {
 
     @And("^the user should be signed in as \"([^\"]*)\"$")
     public void the_user_should_be_signed_in_as(String username) {
-        assertThat(homePage.signedInUser(), equalTo(username));
+        assertThat(homePage.signedInUsername(), equalTo(username));
     }
 }
