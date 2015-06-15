@@ -2,7 +2,7 @@ package scratch.cucumber.example.controller;
 
 import org.junit.Test;
 import org.springframework.web.servlet.ModelAndView;
-import scratch.cucumber.example.service.SignInService;
+import scratch.cucumber.example.domain.User;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -14,15 +14,14 @@ public class HomeControllerTest {
     @Test
     public void Can_display_home_page() {
 
-        final SignInService signInService = mock(SignInService.class);
         final String username = "User Name";
-        final String token = "token";
+        final User user = mock(User.class);
 
         // Given
-        given(signInService.findUsernameByToken(token)).willReturn(username);
+        given(user.getUsername()).willReturn(username);
 
         // When
-        final ModelAndView actual = new HomeController(signInService).display(token);
+        final ModelAndView actual = new HomeController().display(user);
 
         // Then
         assertThat(actual.getViewName(), equalTo("home"));

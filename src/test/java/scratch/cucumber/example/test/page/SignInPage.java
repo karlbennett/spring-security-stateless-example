@@ -19,10 +19,6 @@ public class SignInPage {
         this.baseUrl = baseUrl;
     }
 
-    public void visit() {
-        driver.get(baseUrl + "/signIn");
-    }
-
     public void enterUsername(String username) {
         enterTextByLabel(driver, "User Name", username);
     }
@@ -33,6 +29,15 @@ public class SignInPage {
 
     public HomePage signIn() {
         driver.findElement(byValue("Sign In")).click();
-        return new HomePage(driver);
+        return new HomePage(driver, baseUrl);
+    }
+
+    public SignInPage signOut() {
+        driver.manage().deleteAllCookies();
+        return this;
+    }
+
+    public String getTitle() {
+        return driver.getTitle();
     }
 }

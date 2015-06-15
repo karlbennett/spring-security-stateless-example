@@ -2,8 +2,8 @@ package scratch.cucumber.example.test.step;
 
 import cucumber.api.java.en.Given;
 import org.springframework.beans.factory.annotation.Autowired;
+import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.service.UserRepository;
 
 public class BackgroundUserSteps extends SpringBootIntegrationSteps {
 

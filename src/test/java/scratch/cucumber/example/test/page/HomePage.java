@@ -10,10 +10,12 @@ import org.springframework.stereotype.Component;
 public class HomePage {
 
     private final WebDriver driver;
+    private final BaseUrl baseUrl;
 
     @Autowired
-    public HomePage(WebDriver driver) {
+    public HomePage(WebDriver driver, BaseUrl baseUrl) {
         this.driver = driver;
+        this.baseUrl = baseUrl;
     }
 
     public String getTitle() {
@@ -26,5 +28,10 @@ public class HomePage {
         } catch (NoSuchElementException e) {
             return "The user is not signed in.";
         }
+    }
+
+    public HomePage visit() {
+        driver.get(baseUrl.toString());
+        return this;
     }
 }
