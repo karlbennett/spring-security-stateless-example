@@ -17,12 +17,32 @@
 
 package scratch.cucumber.example.security;
 
+import org.springframework.util.MultiValueMap;
 import scratch.cucumber.example.domain.User;
 
 /**
  * @author Karl Bennett
  */
-public interface UserFactory<T> {
+public class MultiValueMapUserFactory implements UserFactory<MultiValueMap<String, String>> {
 
-    User create(T input);
+    @Override
+    public User create(MultiValueMap<String, String> multiValueMap) {
+
+        final String username = multiValueMap.getFirst("username");
+        final String password = multiValueMap.getFirst("password");
+
+        if (username == null && password == null) {
+            throw new IllegalArgumentException("A username and password must be supplied.");
+        }
+
+        if (username == null) {
+            throw new IllegalArgumentException("A username must be supplied.");
+        }
+
+        if (password == null) {
+            throw new IllegalArgumentException("A password must be supplied.");
+        }
+
+        return new User(username, password);
+    }
 }

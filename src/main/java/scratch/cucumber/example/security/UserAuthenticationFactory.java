@@ -30,10 +30,10 @@ public class UserAuthenticationFactory implements AuthenticationFactory {
 
     private static final String X_AUTH_TOKEN = "X-AUTH-TOKEN";
 
-    private final UserFactory userFactory;
+    private final UserFactory<HttpServletRequest> userFactory;
     private final TokenFactory tokenFactory;
 
-    public UserAuthenticationFactory(UserFactory userFactory, TokenFactory tokenFactory) {
+    public UserAuthenticationFactory(UserFactory<HttpServletRequest> userFactory, TokenFactory tokenFactory) {
         this.userFactory = userFactory;
         this.tokenFactory = tokenFactory;
     }

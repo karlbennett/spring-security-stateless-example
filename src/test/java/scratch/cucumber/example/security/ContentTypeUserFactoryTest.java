@@ -18,6 +18,7 @@
 package scratch.cucumber.example.security;
 
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import scratch.cucumber.example.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,30 +29,32 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 public class ContentTypeUserFactoryTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void Can_create_a_user_for_a_specific_content_type() {
 
-        final String contentTypeOne = APPLICATION_FORM_URLENCODED_VALUE;
-        final String contentTypeTwo = APPLICATION_JSON_VALUE;
-        final UserFactory userFactoryOne = mock(UserFactory.class);
-        final UserFactory userFactoryTwo = mock(UserFactory.class);
-        final Map<String, UserFactory> factories = new HashMap<String, UserFactory>() {{
-            put(contentTypeOne, userFactoryOne);
-            put(contentTypeTwo, userFactoryTwo);
-        }};
+        final MediaType contentTypeOne = APPLICATION_FORM_URLENCODED;
+        final MediaType contentTypeTwo = APPLICATION_JSON;
+        final UserFactory<HttpServletRequest> userFactoryOne = mock(UserFactory.class);
+        final UserFactory<HttpServletRequest> userFactoryTwo = mock(UserFactory.class);
+        final Map<MediaType, UserFactory<HttpServletRequest>> factories =
+            new HashMap<MediaType, UserFactory<HttpServletRequest>>() {{
+                put(contentTypeOne, userFactoryOne);
+                put(contentTypeTwo, userFactoryTwo);
+            }};
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
         final User expected = mock(User.class);
 
         // Given
-        given(request.getContentType()).willReturn(contentTypeTwo);
+        given(request.getContentType()).willReturn(contentTypeTwo.toString());
         given(userFactoryTwo.create(request)).willReturn(expected);
 
         // When
@@ -62,12 +65,14 @@ public class ContentTypeUserFactoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unchecked")
     public void Get_a_meaningful_error_when_the_content_type_is_not_supported() {
 
-        final Map<String, UserFactory> factories = new HashMap<String, UserFactory>() {{
-            put(APPLICATION_FORM_URLENCODED_VALUE, mock(UserFactory.class));
-            put(APPLICATION_JSON_VALUE, mock(UserFactory.class));
-        }};
+        final Map<MediaType, UserFactory<HttpServletRequest>> factories =
+            new HashMap<MediaType, UserFactory<HttpServletRequest>>() {{
+                put(APPLICATION_FORM_URLENCODED, mock(UserFactory.class));
+                put(APPLICATION_JSON, mock(UserFactory.class));
+            }};
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 

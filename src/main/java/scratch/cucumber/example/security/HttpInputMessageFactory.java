@@ -17,12 +17,12 @@
 
 package scratch.cucumber.example.security;
 
-import scratch.cucumber.example.domain.User;
+import org.springframework.http.HttpInputMessage;
 
 /**
  * @author Karl Bennett
  */
-public interface UserFactory<T> {
+public interface HttpInputMessageFactory<T> {
 
-    User create(T input);
+    HttpInputMessage create(T input);
 }

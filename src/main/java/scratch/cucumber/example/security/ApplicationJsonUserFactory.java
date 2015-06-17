@@ -17,12 +17,29 @@
 
 package scratch.cucumber.example.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import scratch.cucumber.example.domain.User;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * @author Karl Bennett
  */
-public interface UserFactory<T> {
+public class ApplicationJsonUserFactory implements UserFactory<HttpServletRequest> {
 
-    User create(T input);
+    private final ObjectMapper objectMapper;
+
+    public ApplicationJsonUserFactory(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public User create(HttpServletRequest request) {
+        try {
+            return objectMapper.readValue(request.getInputStream(), User.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

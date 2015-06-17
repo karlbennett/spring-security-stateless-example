@@ -17,12 +17,18 @@
 
 package scratch.cucumber.example.security;
 
-import scratch.cucumber.example.domain.User;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.server.ServletServerHttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Karl Bennett
  */
-public interface UserFactory<T> {
+public class HttpServletRequestHttpInputMessageFactory implements HttpInputMessageFactory<HttpServletRequest> {
 
-    User create(T input);
+    @Override
+    public HttpInputMessage create(HttpServletRequest request) {
+        return new ServletServerHttpRequest(request);
+    }
 }
