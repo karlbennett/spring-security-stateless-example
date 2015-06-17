@@ -40,17 +40,19 @@ public class StatelessSignInFilter extends AbstractAuthenticationProcessingFilte
     private final UserRepository userRepository;
     private final SecurityContextHolder securityContextHolder;
 
-    public StatelessSignInFilter(RequestMatcher requiresAuthenticationRequestMatcher,
-                                 AuthenticationFactory authenticationFactory,
-                                 AuthenticationManager authenticationManager,
-                                 UserRepository userRepository,
-                                 SecurityContextHolder securityContextHolder
+    public StatelessSignInFilter(
+        RequestMatcher requestMatcher,
+        AuthenticationFactory authenticationFactory,
+        AuthenticationManager authenticationManager,
+        UserRepository userRepository,
+        SecurityContextHolder securityContextHolder
     ) {
-        super(requiresAuthenticationRequestMatcher);
+        super(requestMatcher);
         this.authenticationFactory = authenticationFactory;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.securityContextHolder = securityContextHolder;
+        setAuthenticationManager(authenticationManager);
     }
 
     @Override
