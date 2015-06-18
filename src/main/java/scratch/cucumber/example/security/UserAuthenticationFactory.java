@@ -17,6 +17,7 @@
 
 package scratch.cucumber.example.security;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import scratch.cucumber.example.domain.User;
 
@@ -39,12 +40,16 @@ public class UserAuthenticationFactory implements AuthenticationFactory {
     }
 
     @Override
-    public Authentication create(HttpServletRequest request) {
-        return create(userFactory.create(request));
+    public UsernamePasswordAuthenticationToken create(HttpServletRequest request) {
+
+        final User user = userFactory.create(request);
+        // Must return a UsernamePasswordAuthenticationToken so that Spring Security uses the correct authentication
+        // provider.
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
     }
 
     @Override
-    public Authentication create(User user) {
+    public UserAuthentication create(User user) {
         return new UserAuthentication(user);
     }
 

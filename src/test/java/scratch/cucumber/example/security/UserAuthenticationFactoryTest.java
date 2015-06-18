@@ -19,6 +19,7 @@ package scratch.cucumber.example.security;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import scratch.cucumber.example.domain.User;
@@ -38,11 +39,12 @@ import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class UserAuthenticationFactoryTest {
 
-    private UserFactory userFactory;
+    private UserFactory<HttpServletRequest> userFactory;
     private TokenFactory tokenFactory;
     private UserAuthenticationFactory userAuthenticationFactory;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() {
         userFactory = mock(UserFactory.class);
         tokenFactory = mock(TokenFactory.class);
@@ -64,23 +66,12 @@ public class UserAuthenticationFactoryTest {
         given(user.getPassword()).willReturn(password);
 
         // When
-        final Authentication actual = userAuthenticationFactory.create(request);
+        final UsernamePasswordAuthenticationToken actual = userAuthenticationFactory.create(request);
 
         // Then
-        assertPropertyReflectionEquals("user", user, actual);
         assertThat(actual.getName(), equalTo(username));
         assertThat(actual.getPrincipal().toString(), equalTo(username));
         assertThat(actual.getCredentials().toString(), equalTo(password));
-
-        final UserDetails details = (UserDetails) actual.getDetails();
-
-        assertThat(details.getUsername(), equalTo(username));
-        assertThat(details.getPassword(), equalTo(password));
-        assertThat(details.getAuthorities(), empty());
-        assertThat(details.isAccountNonExpired(), equalTo(true));
-        assertThat(details.isAccountNonLocked(), equalTo(true));
-        assertThat(details.isCredentialsNonExpired(), equalTo(true));
-        assertThat(details.isEnabled(), equalTo(true));
     }
 
     @Test
@@ -95,18 +86,18 @@ public class UserAuthenticationFactoryTest {
         given(user.getPassword()).willReturn(password);
 
         // When
-        final Authentication actual = userAuthenticationFactory.create(user);
+        final UserAuthentication actual = userAuthenticationFactory.create(user);
 
         // Then
         assertPropertyReflectionEquals("user", user, actual);
         assertThat(actual.getName(), equalTo(username));
-        assertThat(actual.getPrincipal().toString(), equalTo(username));
-        assertThat(actual.getCredentials().toString(), equalTo(password));
+        assertThat(actual.getPrincipal(), equalTo(username));
+        assertThat(actual.getCredentials(), equalTo(password));
         assertThat(actual.getAuthorities(), empty());
         assertThat(actual.isAuthenticated(), equalTo(true));
         assertThat(actual.implies(new Subject()), equalTo(false));
 
-        final UserDetails details = (UserDetails) actual.getDetails();
+        final UserDetails details = actual.getDetails();
 
         assertThat(details.getUsername(), equalTo(username));
         assertThat(details.getPassword(), equalTo(password));

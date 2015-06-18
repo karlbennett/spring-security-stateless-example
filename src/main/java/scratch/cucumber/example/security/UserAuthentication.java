@@ -45,17 +45,17 @@ public class UserAuthentication implements Authentication {
     }
 
     @Override
-    public Object getCredentials() {
+    public String getCredentials() {
         return user.getPassword();
     }
 
     @Override
-    public Object getDetails() {
+    public UserDetails getDetails() {
         return userDetails;
     }
 
     @Override
-    public Object getPrincipal() {
+    public String getPrincipal() {
         return user.getUsername();
     }
 

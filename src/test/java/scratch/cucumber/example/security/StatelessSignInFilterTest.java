@@ -37,6 +37,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class StatelessSignInFilterTest {
@@ -47,6 +48,7 @@ public class StatelessSignInFilterTest {
     private SecurityContextHolder securityContextHolder;
 
     private StatelessSignInFilter statelessSignInFilter;
+    private RequestMatcher requestMatcher;
 
     @Before
     public void setUp() {
@@ -54,9 +56,10 @@ public class StatelessSignInFilterTest {
         authenticationManager = mock(AuthenticationManager.class);
         userRepository = mock(UserRepository.class);
         securityContextHolder = mock(SecurityContextHolder.class);
+        requestMatcher = mock(RequestMatcher.class);
 
         statelessSignInFilter = new StatelessSignInFilter(
-            mock(RequestMatcher.class),
+            requestMatcher,
             authenticationFactory,
             authenticationManager,
             userRepository,
@@ -109,5 +112,41 @@ public class StatelessSignInFilterTest {
         // Then
         verify(authenticationFactory).apply(userAuthentication, response);
         verify(securityContext).setAuthentication(userAuthentication);
+    }
+
+    @Test
+    public void Will_attempt_to_sign_in_a_user_for_a_post() throws IOException, ServletException {
+
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        final HttpServletResponse response = mock(HttpServletResponse.class);
+        final FilterChain filterChain = mock(FilterChain.class);
+
+        // Given
+        given(requestMatcher.matches(request)).willReturn(true);
+        given(request.getMethod()).willReturn("POST");
+
+        // When
+        statelessSignInFilter.doFilter(request, response, filterChain);
+
+        // Then
+        verifyZeroInteractions(filterChain);
+    }
+
+    @Test
+    public void Will_not_attempt_to_sign_in_a_user_for_a_get() throws IOException, ServletException {
+
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        final HttpServletResponse response = mock(HttpServletResponse.class);
+        final FilterChain filterChain = mock(FilterChain.class);
+
+        // Given
+        given(requestMatcher.matches(request)).willReturn(true);
+        given(request.getMethod()).willReturn("GET");
+
+        // When
+        statelessSignInFilter.doFilter(request, response, filterChain);
+
+        // Then
+        verify(filterChain).doFilter(request, response);
     }
 }
