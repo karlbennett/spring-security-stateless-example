@@ -24,16 +24,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.security.ApplicationFormUrlEncodedUserFactory;
 import scratch.cucumber.example.security.ApplicationJsonUserFactory;
 import scratch.cucumber.example.security.AuthenticationFactory;
@@ -43,8 +41,8 @@ import scratch.cucumber.example.security.JwtTokenFactory;
 import scratch.cucumber.example.security.MultiValueMapUserFactory;
 import scratch.cucumber.example.security.SecurityContextHolder;
 import scratch.cucumber.example.security.StatelessAuthenticationFilter;
-import scratch.cucumber.example.security.StatelessSignInFilter;
-import scratch.cucumber.example.security.UserAuthenticationFactory;
+import scratch.cucumber.example.security.StatelessAuthenticationSuccessHandler;
+import scratch.cucumber.example.security.TokenFactory;
 import scratch.cucumber.example.security.UserFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,10 +57,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserRepository userRepository;
+    private SecurityContextHolder securityContextHolder;
 
     @Autowired
-    private SecurityContextHolder securityContextHolder;
+    private AuthenticationFactory authenticationFactory;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -70,48 +68,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        final StatelessSignInFilter signInFilter = new StatelessSignInFilter(
-            new AntPathRequestMatcher("/spring/signIn", "POST"),
-            authenticationFactory(),
-            authenticationManagerBean(),
-            userRepository,
-            securityContextHolder
-        );
-
-        final StatelessAuthenticationFilter authenticationFilter = new StatelessAuthenticationFilter(
-            authenticationFactory(),
-            securityContextHolder
-        );
+        final SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
+        handler.setDefaultTargetUrl("/spring/");
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests().anyRequest().authenticated();
-        http.formLogin().loginPage("/spring/signIn").permitAll();
+        http.formLogin()
+            .loginPage("/spring/signIn").permitAll()
+            .successHandler(new StatelessAuthenticationSuccessHandler(authenticationFactory, handler));
         http.logout().logoutUrl("/spring/signOut").logoutSuccessUrl("/spring/");
-        http.addFilterBefore(signInFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Bean
-    public AuthenticationFactory authenticationFactory() {
-        return new UserAuthenticationFactory(
-            new ContentTypeUserFactory(new HashMap<MediaType, UserFactory<HttpServletRequest>>() {{
-                put(
-                    APPLICATION_FORM_URLENCODED,
-                    new ApplicationFormUrlEncodedUserFactory(
-                        new HttpServletRequestHttpInputMessageFactory(),
-                        new FormHttpMessageConverter(),
-                        new MultiValueMapUserFactory()
-                    ));
-                put(APPLICATION_JSON, new ApplicationJsonUserFactory(new ObjectMapper()));
-            }}),
-            new JwtTokenFactory("some secret string", Jwts.builder(), Jwts.parser()), userRepository);
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+        http.addFilterBefore(
+            new StatelessAuthenticationFilter(authenticationFactory, securityContextHolder),
+            UsernamePasswordAuthenticationFilter.class
+        );
     }
 
     @Override
@@ -121,8 +91,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(NoOpPasswordEncoder.getInstance());
     }
 
-    @Override
-    public UserDetailsService userDetailsService() {
-        return userDetailsService;
+    @Bean
+    public UserFactory<HttpServletRequest> httpServletRequestUserFactory() {
+        return new ContentTypeUserFactory(new HashMap<MediaType, UserFactory<HttpServletRequest>>() {{
+            put(
+                APPLICATION_FORM_URLENCODED,
+                new ApplicationFormUrlEncodedUserFactory(
+                    new HttpServletRequestHttpInputMessageFactory(),
+                    new FormHttpMessageConverter(),
+                    new MultiValueMapUserFactory()
+                ));
+            put(APPLICATION_JSON, new ApplicationJsonUserFactory(new ObjectMapper()));
+        }});
+    }
+
+    @Bean
+    public TokenFactory tokenFactory() {
+        return new JwtTokenFactory("some secret string", Jwts.builder(), Jwts.parser());
     }
 }

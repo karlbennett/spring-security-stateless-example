@@ -37,13 +37,12 @@ public class EqualCookie extends Cookie {
     public boolean equals(Object o) {
 
         if (this == o) return true;
+        if (!(o instanceof Cookie)) return false;
 
-        if (!(o instanceof EqualCookie)) return false;
+        final Cookie that = (Cookie) o;
 
-        final EqualCookie that = (EqualCookie) o;
-
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+        if (!name.equals(that.getName())) return false;
+        if (value != null ? !value.equals(that.getValue()) : that.getValue() != null) return false;
 
         return true;
     }
@@ -51,9 +50,8 @@ public class EqualCookie extends Cookie {
     @Override
     public int hashCode() {
 
-        int result = name != null ? name.hashCode() : 0;
+        int result = name.hashCode();
         result = 31 * result + (value != null ? value.hashCode() : 0);
-
         return result;
     }
 }

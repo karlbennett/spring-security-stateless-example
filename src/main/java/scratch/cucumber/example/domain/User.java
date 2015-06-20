@@ -30,13 +30,15 @@ public class User implements Serializable {
 
 
     User() {
-        this.id = null;
-        this.username = null;
-        this.password = null;
+        this(null, null, null);
     }
 
     public User(String username, String password) {
-        this.id = null;
+        this(null, username, password);
+    }
+
+    User(Long id, String username, String password) {
+        this.id = id;
         this.username = username;
         this.password = password;
     }

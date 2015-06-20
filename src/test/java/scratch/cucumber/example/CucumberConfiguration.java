@@ -18,7 +18,7 @@ import static java.lang.String.format;
 @ComponentScan
 public class CucumberConfiguration {
 
-    @Bean
+    @Bean(destroyMethod = "quit")
     public WebDriver webDriver(@Value("${web.driver:htmlunit}") String webDriver) {
 
         if ("htmlunit".equals(webDriver)) {

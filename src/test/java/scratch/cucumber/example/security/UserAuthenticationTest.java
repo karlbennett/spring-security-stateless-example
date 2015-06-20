@@ -29,6 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.unitils.reflectionassert.ReflectionAssert.assertPropertyReflectionEquals;
+import static shiver.me.timbers.data.random.RandomBooleans.someBoolean;
 import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class UserAuthenticationTest {
@@ -39,6 +40,7 @@ public class UserAuthenticationTest {
         final User user = mock(User.class);
         final String username = someString();
         final String password = someString();
+        final Boolean authenticated = someBoolean();
 
         // Given
         given(user.getUsername()).willReturn(username);
@@ -46,6 +48,7 @@ public class UserAuthenticationTest {
 
         // When
         final UserAuthentication actual = new UserAuthentication(user);
+        actual.setAuthenticated(authenticated);
 
         // Then
         assertPropertyReflectionEquals("user", user, actual);
@@ -53,7 +56,7 @@ public class UserAuthenticationTest {
         assertThat(actual.getPrincipal(), equalTo(username));
         assertThat(actual.getCredentials(), equalTo(password));
         assertThat(actual.getAuthorities(), empty());
-        assertThat(actual.isAuthenticated(), equalTo(true));
+        assertThat(actual.isAuthenticated(), equalTo(authenticated));
         assertThat(actual.implies(new Subject()), equalTo(false));
 
         final UserDetails details = actual.getDetails();
