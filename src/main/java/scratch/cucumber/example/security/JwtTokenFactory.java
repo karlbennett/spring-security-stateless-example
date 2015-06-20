@@ -18,7 +18,7 @@
 package scratch.cucumber.example.security;
 
 import io.jsonwebtoken.JwtBuilder;
-import org.springframework.security.core.Authentication;
+import io.jsonwebtoken.JwtParser;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 
@@ -27,16 +27,23 @@ import static io.jsonwebtoken.SignatureAlgorithm.HS512;
  */
 public class JwtTokenFactory implements TokenFactory {
 
-    private final JwtBuilder jwtBuilder;
     private final String secret;
+    private final JwtBuilder jwtBuilder;
+    private final JwtParser jwtParser;
 
-    public JwtTokenFactory(JwtBuilder jwtBuilder, String secret) {
-        this.jwtBuilder = jwtBuilder;
+    public JwtTokenFactory(String secret, JwtBuilder jwtBuilder, JwtParser jwtParser) {
         this.secret = secret;
+        this.jwtBuilder = jwtBuilder;
+        this.jwtParser = jwtParser;
     }
 
     @Override
-    public String create(Authentication authentication) {
-        return jwtBuilder.setSubject(authentication.getName()).signWith(HS512, secret).compact();
+    public String create(String username) {
+        return jwtBuilder.setSubject(username).signWith(HS512, secret).compact();
+    }
+
+    @Override
+    public String parseUsername(String token) {
+        return jwtParser.setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 }

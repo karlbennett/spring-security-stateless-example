@@ -17,9 +17,12 @@
 
 package scratch.cucumber.example.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtParser;
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.core.Authentication;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static org.hamcrest.Matchers.equalTo;
@@ -30,13 +33,22 @@ import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class JwtTokenFactoryTest {
 
+    private String secret;
+    private JwtBuilder jwtBuilder;
+    private JwtTokenFactory factory;
+    private JwtParser jwtParser;
+
+    @Before
+    public void setUp() {
+        secret = someString();
+        jwtBuilder = mock(JwtBuilder.class);
+        jwtParser = mock(JwtParser.class);
+
+        factory = new JwtTokenFactory(secret, jwtBuilder, jwtParser);
+    }
+
     @Test
     public void Can_create_a_token_from_an_authentication() {
-
-        final JwtBuilder jwtBuilder = mock(JwtBuilder.class);
-        final String secret = someString();
-
-        final Authentication authentication = mock(Authentication.class);
 
         final String username = someString();
         final JwtBuilder signWithJwtBuilder = mock(JwtBuilder.class);
@@ -45,13 +57,36 @@ public class JwtTokenFactoryTest {
         final String expected = someString();
 
         // Given
-        given(authentication.getName()).willReturn(username);
-        given(jwtBuilder.setSubject(authentication.getName())).willReturn(signWithJwtBuilder);
+        given(jwtBuilder.setSubject(username)).willReturn(signWithJwtBuilder);
         given(signWithJwtBuilder.signWith(HS512, secret)).willReturn(compactJwtBuilder);
         given(compactJwtBuilder.compact()).willReturn(expected);
 
         // When
-        final String actual = new JwtTokenFactory(jwtBuilder, secret).create(authentication);
+        final String actual = factory.create(username);
+
+        // Then
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void Can_create_an_authentication_from_a_token() {
+
+        final String token = someString();
+
+        final JwtParser signingKeyJwtParser = mock(JwtParser.class);
+        @SuppressWarnings("unchecked")
+        final Jws<Claims> jws = mock(Jws.class);
+        final Claims body = mock(Claims.class);
+        final String expected = someString();
+
+        // Given
+        given(jwtParser.setSigningKey(secret)).willReturn(signingKeyJwtParser);
+        given(signingKeyJwtParser.parseClaimsJws(token)).willReturn(jws);
+        given(jws.getBody()).willReturn(body);
+        given(body.getSubject()).willReturn(expected);
+
+        // When
+        final String actual = factory.parseUsername(token);
 
         // Then
         assertThat(actual, equalTo(expected));

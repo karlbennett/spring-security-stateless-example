@@ -110,7 +110,7 @@ public class StatelessSignInFilterTest {
         statelessSignInFilter.successfulAuthentication(request, response, filterChain, authentication);
 
         // Then
-        verify(authenticationFactory).apply(userAuthentication, response);
+        verify(authenticationFactory).add(response, userAuthentication);
         verify(securityContext).setAuthentication(userAuthentication);
     }
 

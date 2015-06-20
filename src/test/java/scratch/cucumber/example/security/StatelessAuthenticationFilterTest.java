@@ -18,13 +18,18 @@
 package scratch.cucumber.example.security;
 
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 public class StatelessAuthenticationFilterTest {
@@ -32,14 +37,26 @@ public class StatelessAuthenticationFilterTest {
     @Test
     public void Can_authenticate_request() throws IOException, ServletException {
 
-        // Given
-        final ServletRequest request = mock(ServletRequest.class);
+        final AuthenticationFactory authenticationFactory = mock(AuthenticationFactory.class);
+        final SecurityContextHolder contextHolder = mock(SecurityContextHolder.class);
+
+        final HttpServletRequest request = mock(HttpServletRequest.class);
         final ServletResponse response = mock(ServletResponse.class);
         final FilterChain filterChain = mock(FilterChain.class);
 
+        final Authentication authentication = mock(Authentication.class);
+        final SecurityContext securityContext = mock(SecurityContext.class);
+
+        // Given
+        given(authenticationFactory.retrieve(request)).willReturn(authentication);
+        given(contextHolder.getContext()).willReturn(securityContext);
+
         // When
-        new StatelessAuthenticationFilter().doFilter(request, response, filterChain);
+        new StatelessAuthenticationFilter(authenticationFactory, contextHolder).doFilter(request, response, filterChain);
 
         // Then
+        final InOrder order = inOrder(securityContext, filterChain);
+        order.verify(securityContext).setAuthentication(authentication);
+        order.verify(filterChain).doFilter(request, response);
     }
 }

@@ -23,6 +23,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -30,8 +31,21 @@ import java.io.IOException;
  */
 public class StatelessAuthenticationFilter extends GenericFilterBean {
 
+    private final AuthenticationFactory authenticationFactory;
+    private final SecurityContextHolder contextHolder;
+
+    public StatelessAuthenticationFilter(
+        AuthenticationFactory authenticationFactory,
+        SecurityContextHolder contextHolder
+    ) {
+        this.authenticationFactory = authenticationFactory;
+        this.contextHolder = contextHolder;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
         throws IOException, ServletException {
+        contextHolder.getContext().setAuthentication(authenticationFactory.retrieve((HttpServletRequest) request));
+        filterChain.doFilter(request, response);
     }
 }

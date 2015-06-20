@@ -19,8 +19,10 @@ package scratch.cucumber.example.security;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.domain.User;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,10 +35,16 @@ public class UserAuthenticationFactory implements AuthenticationFactory {
 
     private final UserFactory<HttpServletRequest> userFactory;
     private final TokenFactory tokenFactory;
+    private final UserRepository userRepository;
 
-    public UserAuthenticationFactory(UserFactory<HttpServletRequest> userFactory, TokenFactory tokenFactory) {
+    public UserAuthenticationFactory(
+        UserFactory<HttpServletRequest> userFactory,
+        TokenFactory tokenFactory,
+        UserRepository userRepository
+    ) {
         this.userFactory = userFactory;
         this.tokenFactory = tokenFactory;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -54,11 +62,51 @@ public class UserAuthenticationFactory implements AuthenticationFactory {
     }
 
     @Override
-    public void apply(Authentication authentication, HttpServletResponse response) {
+    public void add(HttpServletResponse response, Authentication authentication) {
 
-        final String token = tokenFactory.create(authentication);
+        final String token = tokenFactory.create(authentication.getName());
 
         response.addHeader(X_AUTH_TOKEN, token);
         response.addCookie(new EqualCookie(X_AUTH_TOKEN, token));
+    }
+
+    @Override
+    public UserAuthentication retrieve(HttpServletRequest request) {
+
+        final String username = findUsername(request);
+
+        if (username != null) {
+            return new UserAuthentication(userRepository.findByUsername(username));
+        }
+
+        return null;
+    }
+
+    private String findUsername(HttpServletRequest request) {
+
+        final String headerToken = request.getHeader(X_AUTH_TOKEN);
+
+        if (headerToken != null) {
+            return tokenFactory.parseUsername(headerToken);
+        }
+
+        final String cookieToken = findToken(request.getCookies());
+
+        if (cookieToken != null) {
+            return tokenFactory.parseUsername(cookieToken);
+        }
+
+        return null;
+    }
+
+    private static String findToken(Cookie[] cookies) {
+
+        if (cookies != null) for (Cookie cookie : cookies) {
+            if (X_AUTH_TOKEN.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
     }
 }

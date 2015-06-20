@@ -42,6 +42,7 @@ import scratch.cucumber.example.security.HttpServletRequestHttpInputMessageFacto
 import scratch.cucumber.example.security.JwtTokenFactory;
 import scratch.cucumber.example.security.MultiValueMapUserFactory;
 import scratch.cucumber.example.security.SecurityContextHolder;
+import scratch.cucumber.example.security.StatelessAuthenticationFilter;
 import scratch.cucumber.example.security.StatelessSignInFilter;
 import scratch.cucumber.example.security.UserAuthenticationFactory;
 import scratch.cucumber.example.security.UserFactory;
@@ -83,6 +84,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             ),
             UsernamePasswordAuthenticationFilter.class
         );
+        http.addFilterBefore(
+            new StatelessAuthenticationFilter(authenticationFactory(), securityContextHolder),
+            UsernamePasswordAuthenticationFilter.class
+        );
     }
 
     @Bean
@@ -98,8 +103,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     ));
                 put(APPLICATION_JSON, new ApplicationJsonUserFactory(new ObjectMapper()));
             }}),
-            new JwtTokenFactory(Jwts.builder(), "some secret string")
-        );
+            new JwtTokenFactory("some secret string", Jwts.builder(), Jwts.parser()), userRepository);
     }
 
     @Bean

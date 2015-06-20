@@ -17,12 +17,12 @@
 
 package scratch.cucumber.example.security;
 
-import org.springframework.security.core.Authentication;
-
 /**
  * @author Karl Bennett
  */
 public interface TokenFactory {
 
-    String create(Authentication authentication);
+    String create(String username);
+
+    String parseUsername(String token);
 }

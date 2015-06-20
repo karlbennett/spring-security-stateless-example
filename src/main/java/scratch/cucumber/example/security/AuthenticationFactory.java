@@ -32,5 +32,7 @@ public interface AuthenticationFactory {
 
     Authentication create(User user);
 
-    void apply(Authentication authentication, HttpServletResponse response);
+    void add(HttpServletResponse response, Authentication authentication);
+
+    Authentication retrieve(HttpServletRequest request);
 }

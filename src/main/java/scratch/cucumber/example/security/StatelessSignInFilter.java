@@ -83,7 +83,7 @@ public class StatelessSignInFilter extends AbstractAuthenticationProcessingFilte
             userRepository.findByUsername(authentication.getName())
         );
 
-        authenticationFactory.apply(userAuthentication, response);
+        authenticationFactory.add(response, userAuthentication);
 
         securityContextHolder.getContext().setAuthentication(userAuthentication);
     }
