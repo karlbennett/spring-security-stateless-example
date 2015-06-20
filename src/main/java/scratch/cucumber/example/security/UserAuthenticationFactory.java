@@ -76,7 +76,12 @@ public class UserAuthenticationFactory implements AuthenticationFactory {
         final String username = findUsername(request);
 
         if (username != null) {
-            return new UserAuthentication(userRepository.findByUsername(username));
+
+            final User user = userRepository.findByUsername(username);
+
+            if (user != null) {
+                return new UserAuthentication(user);
+            }
         }
 
         return null;

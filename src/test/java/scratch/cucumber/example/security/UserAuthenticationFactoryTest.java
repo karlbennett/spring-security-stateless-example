@@ -159,6 +159,27 @@ public class UserAuthenticationFactoryTest {
     }
 
     @Test
+    public void Cannot_retrieve_an_authentication_for_a_user_that_does_not_exist() {
+
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+
+        final String token = someString();
+        final String username = someString();
+
+        // Given
+        given(request.getHeader(X_AUTH_TOKEN)).willReturn(null);
+        given(request.getCookies()).willReturn(new Cookie[]{new Cookie(X_AUTH_TOKEN, token)});
+        given(tokenFactory.parseUsername(token)).willReturn(username);
+        given(userRepository.findByUsername(username)).willReturn(null);
+
+        // When
+        final UserAuthentication actual = userAuthenticationFactory.retrieve(request);
+
+        // Then
+        assertThat(actual, nullValue());
+    }
+
+    @Test
     public void Return_no_authentication_if_no_token_supplied() {
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
