@@ -4,31 +4,32 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static scratch.cucumber.example.test.page.Bys.byValue;
-import static scratch.cucumber.example.test.page.Finders.enterTextByLabel;
-
 @Component
 public class SignInPage {
 
     private final WebDriver driver;
     private final BaseUrl baseUrl;
+    private final Finders finders;
+    private final Bys bys;
 
     @Autowired
-    public SignInPage(WebDriver driver, BaseUrl baseUrl) {
+    public SignInPage(WebDriver driver, BaseUrl baseUrl, Finders finders, Bys bys) {
         this.driver = driver;
         this.baseUrl = baseUrl;
+        this.finders = finders;
+        this.bys = bys;
     }
 
     public void enterUsername(String username) {
-        enterTextByLabel(driver, "User Name", username);
+        finders.enterTextByLabel("User Name", username);
     }
 
     public void enterPassword(String password) {
-        enterTextByLabel(driver, "Password", password);
+        finders.enterTextByLabel("Password", password);
     }
 
     public HomePage signIn() {
-        driver.findElement(byValue("Sign In")).click();
+        driver.findElement(bys.byValue("Sign In")).click();
         return new HomePage(driver, baseUrl);
     }
 
