@@ -24,16 +24,15 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import scratch.cucumber.example.controller.UserHandlerMethodArgumentResolver;
 import scratch.cucumber.example.data.UserRepository;
-import scratch.cucumber.example.security.UsernameFactory;
+import scratch.cucumber.example.security.servlet.UsernameFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Configuration
 public class RoutingConfiguration extends WebMvcConfigurerAdapter {
 
     @Autowired
-    private UsernameFactory<HttpServletRequest> usernameFactory;
+    private UsernameFactory usernameFactory;
 
     @Autowired
     private UserRepository userRepository;

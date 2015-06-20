@@ -24,7 +24,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.security.UsernameFactory;
+import scratch.cucumber.example.security.servlet.UsernameFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final UsernameFactory<HttpServletRequest> usernameFactory;
+    private final UsernameFactory usernameFactory;
     private final UserRepository userRepository;
 
-    public UserHandlerMethodArgumentResolver(UsernameFactory<HttpServletRequest> usernameFactory, UserRepository userRepository) {
+    public UserHandlerMethodArgumentResolver(UsernameFactory usernameFactory, UserRepository userRepository) {
         this.usernameFactory = usernameFactory;
         this.userRepository = userRepository;
     }

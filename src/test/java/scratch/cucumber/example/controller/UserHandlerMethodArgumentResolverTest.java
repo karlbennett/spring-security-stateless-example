@@ -25,7 +25,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.security.UsernameFactory;
+import scratch.cucumber.example.security.servlet.UsernameFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,12 +37,11 @@ import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class UserHandlerMethodArgumentResolverTest {
 
-    private UsernameFactory<HttpServletRequest> usernameFactory;
+    private UsernameFactory usernameFactory;
     private UserRepository userRepository;
     private UserHandlerMethodArgumentResolver resolver;
 
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() {
         usernameFactory = mock(UsernameFactory.class);
         userRepository = mock(UserRepository.class);
