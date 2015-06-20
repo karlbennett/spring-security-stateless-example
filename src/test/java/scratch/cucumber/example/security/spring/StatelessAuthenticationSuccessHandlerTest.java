@@ -36,19 +36,19 @@ public class StatelessAuthenticationSuccessHandlerTest {
     public void Can_add_successful_authentication_to_the_response() throws IOException, ServletException {
 
         final AuthenticationFactory authenticationFactory = mock(AuthenticationFactory.class);
-        final SimpleUrlAuthenticationSuccessHandler handler = mock(SimpleUrlAuthenticationSuccessHandler.class);
+        final SimpleUrlAuthenticationSuccessHandler delegate = mock(SimpleUrlAuthenticationSuccessHandler.class);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final HttpServletResponse response = mock(HttpServletResponse.class);
         final Authentication authentication = mock(Authentication.class);
 
         // When
-        new StatelessAuthenticationSuccessHandler(authenticationFactory, handler)
+        new StatelessAuthenticationSuccessHandler(authenticationFactory, delegate)
             .onAuthenticationSuccess(request, response, authentication);
 
         // Then
-        final InOrder order = inOrder(authenticationFactory, handler);
+        final InOrder order = inOrder(authenticationFactory, delegate);
         order.verify(authenticationFactory).add(response, authentication);
-        order.verify(handler).onAuthenticationSuccess(request, response, authentication);
+        order.verify(delegate).onAuthenticationSuccess(request, response, authentication);
     }
 }

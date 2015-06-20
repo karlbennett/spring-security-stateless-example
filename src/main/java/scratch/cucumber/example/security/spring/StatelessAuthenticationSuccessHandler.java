@@ -32,14 +32,14 @@ import java.io.IOException;
 public class StatelessAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthenticationFactory authenticationFactory;
-    private final SimpleUrlAuthenticationSuccessHandler handler;
+    private final SimpleUrlAuthenticationSuccessHandler delegate;
 
     public StatelessAuthenticationSuccessHandler(
         AuthenticationFactory authenticationFactory,
-        SimpleUrlAuthenticationSuccessHandler handler
+        SimpleUrlAuthenticationSuccessHandler delegate
     ) {
         this.authenticationFactory = authenticationFactory;
-        this.handler = handler;
+        this.delegate = delegate;
     }
 
     @Override
@@ -48,6 +48,6 @@ public class StatelessAuthenticationSuccessHandler implements AuthenticationSucc
 
         authenticationFactory.add(response, authentication);
 
-        handler.onAuthenticationSuccess(request, response, authentication);
+        delegate.onAuthenticationSuccess(request, response, authentication);
     }
 }
