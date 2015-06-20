@@ -44,7 +44,7 @@ public class HttpServletRequestUsernameFactory implements UsernameFactory<HttpSe
         final String token = tokenFactory.create(username);
 
         response.addHeader(X_AUTH_TOKEN, token);
-        response.addCookie(new EqualCookie(X_AUTH_TOKEN, token));
+        response.addCookie(new Cookie(X_AUTH_TOKEN, token));
     }
 
     @Override
