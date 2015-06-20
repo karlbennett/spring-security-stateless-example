@@ -10,7 +10,7 @@
 
     <groupId>scratch</groupId>
 
-    <artifactId>spring-boot-cucumber-example</artifactId>
+    <artifactId>spring-security-stateless-example</artifactId>
 
     <version>1.0-SNAPSHOT</version>
 
