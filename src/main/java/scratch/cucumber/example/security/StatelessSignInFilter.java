@@ -26,8 +26,6 @@ import scratch.cucumber.example.data.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -55,18 +53,6 @@ public class StatelessSignInFilter extends AbstractAuthenticationProcessingFilte
         this.userRepository = userRepository;
         this.securityContextHolder = securityContextHolder;
         setAuthenticationManager(authenticationManager);
-    }
-
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
-
-        if (request instanceof HttpServletRequest && "POST".equals(((HttpServletRequest) request).getMethod())) {
-            super.doFilter(request, response, chain);
-            return;
-        }
-
-        chain.doFilter(request, response);
     }
 
     @Override

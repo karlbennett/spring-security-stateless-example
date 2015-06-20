@@ -37,7 +37,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class StatelessSignInFilterTest {
@@ -112,41 +111,5 @@ public class StatelessSignInFilterTest {
         // Then
         verify(authenticationFactory).add(response, userAuthentication);
         verify(securityContext).setAuthentication(userAuthentication);
-    }
-
-    @Test
-    public void Will_attempt_to_sign_in_a_user_for_a_post() throws IOException, ServletException {
-
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final FilterChain filterChain = mock(FilterChain.class);
-
-        // Given
-        given(requestMatcher.matches(request)).willReturn(true);
-        given(request.getMethod()).willReturn("POST");
-
-        // When
-        statelessSignInFilter.doFilter(request, response, filterChain);
-
-        // Then
-        verifyZeroInteractions(filterChain);
-    }
-
-    @Test
-    public void Will_not_attempt_to_sign_in_a_user_for_a_get() throws IOException, ServletException {
-
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        final FilterChain filterChain = mock(FilterChain.class);
-
-        // Given
-        given(requestMatcher.matches(request)).willReturn(true);
-        given(request.getMethod()).willReturn("GET");
-
-        // When
-        statelessSignInFilter.doFilter(request, response, filterChain);
-
-        // Then
-        verify(filterChain).doFilter(request, response);
     }
 }

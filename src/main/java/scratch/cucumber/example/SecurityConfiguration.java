@@ -69,25 +69,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        final StatelessSignInFilter signInFilter = new StatelessSignInFilter(
+            new AntPathRequestMatcher("/spring/signIn", "POST"),
+            authenticationFactory(),
+            authenticationManagerBean(),
+            userRepository,
+            securityContextHolder
+        );
+
+        final StatelessAuthenticationFilter authenticationFilter = new StatelessAuthenticationFilter(
+            authenticationFactory(),
+            securityContextHolder
+        );
+
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests().anyRequest().authenticated();
         http.formLogin().loginPage("/spring/signIn").permitAll();
         http.logout().logoutUrl("/spring/signOut").logoutSuccessUrl("/spring/");
-        http.addFilterBefore(
-            new StatelessSignInFilter(
-                new AntPathRequestMatcher("/spring/signIn"),
-                authenticationFactory(),
-                authenticationManagerBean(),
-                userRepository,
-                securityContextHolder
-            ),
-            UsernamePasswordAuthenticationFilter.class
-        );
-        http.addFilterBefore(
-            new StatelessAuthenticationFilter(authenticationFactory(), securityContextHolder),
-            UsernamePasswordAuthenticationFilter.class
-        );
+        http.addFilterBefore(signInFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
