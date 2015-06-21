@@ -8,15 +8,15 @@
         <version>1.2.4.RELEASE</version>
     </parent>
 
-    <groupId>scratch</groupId>
+    <groupId>example</groupId>
 
-    <artifactId>spring-security-stateless-example</artifactId>
+    <artifactId>spring-security-stateless</artifactId>
 
     <version>1.0-SNAPSHOT</version>
 
     <packaging>war</packaging>
 
-    <name>${project.artifactId}</name>
+    <name>${project.artifactId}-${project.groupId}</name>
 
     <url>https://github.com/karlbennett/spring-boot-cucumber-example</url>
 
