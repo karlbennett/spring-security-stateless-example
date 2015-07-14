@@ -10,7 +10,7 @@
 
     <groupId>example</groupId>
 
-    <artifactId>spring-security-stateless</artifactId>
+    <artifactId>spring-security-stateless-example</artifactId>
 
     <version>1.0-SNAPSHOT</version>
 
@@ -67,6 +67,10 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
