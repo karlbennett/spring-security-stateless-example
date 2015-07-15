@@ -24,7 +24,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.security.servlet.UsernameFactory;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,11 +33,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final UsernameFactory usernameFactory;
+    private final HttpServletRequestBinder<String> httpServletRequestBinder;
     private final UserRepository userRepository;
 
-    public UserHandlerMethodArgumentResolver(UsernameFactory usernameFactory, UserRepository userRepository) {
-        this.usernameFactory = usernameFactory;
+    public UserHandlerMethodArgumentResolver(HttpServletRequestBinder<String> httpServletRequestBinder, UserRepository userRepository) {
+        this.httpServletRequestBinder = httpServletRequestBinder;
         this.userRepository = userRepository;
     }
 
@@ -49,6 +49,6 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
     @Override
     public User resolveArgument(MethodParameter parameter, ModelAndViewContainer container, NativeWebRequest request,
                                 WebDataBinderFactory binderFactory) throws Exception {
-        return userRepository.findByUsername(usernameFactory.retrieve((HttpServletRequest) request.getNativeRequest()));
+        return userRepository.findByUsername(httpServletRequestBinder.retrieve((HttpServletRequest) request.getNativeRequest()));
     }
 }

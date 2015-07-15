@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Karl Bennett
  */
-public interface UsernameFactory {
+public interface HttpServletRequestBinder<T> {
 
-    String retrieve(HttpServletRequest input);
+    T retrieve(HttpServletRequest request);
 
-    void add(HttpServletResponse response, String username);
+    void add(HttpServletResponse response, T value);
 }

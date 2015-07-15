@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package scratch.cucumber.example.security;
+package scratch.cucumber.example.security.token;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;

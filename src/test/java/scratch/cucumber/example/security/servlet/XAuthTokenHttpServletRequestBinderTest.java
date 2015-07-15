@@ -20,7 +20,7 @@ package scratch.cucumber.example.security.servlet;
 import org.junit.Before;
 import org.junit.Test;
 import scratch.cucumber.example.security.EqualCookie;
-import scratch.cucumber.example.security.TokenFactory;
+import scratch.cucumber.example.security.token.TokenFactory;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -35,17 +35,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static shiver.me.timbers.data.random.RandomStrings.someString;
 
-public class TokenUsernameFactoryTest {
+public class XAuthTokenHttpServletRequestBinderTest {
 
     private static final String X_AUTH_TOKEN = "X-AUTH-TOKEN";
 
     private TokenFactory tokenFactory;
-    private TokenUsernameFactory factory;
+    private XAuthTokenHttpServletRequestBinder factory;
 
     @Before
     public void setUp() {
         tokenFactory = mock(TokenFactory.class);
-        factory = new TokenUsernameFactory(tokenFactory);
+        factory = new XAuthTokenHttpServletRequestBinder(tokenFactory);
     }
 
     @Test

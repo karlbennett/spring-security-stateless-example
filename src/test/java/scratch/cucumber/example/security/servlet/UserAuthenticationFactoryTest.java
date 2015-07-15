@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package scratch.cucumber.example.security.spring;
+package scratch.cucumber.example.security.servlet;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
-import scratch.cucumber.example.security.TokenFactory;
-import scratch.cucumber.example.security.servlet.UsernameFactory;
+import scratch.cucumber.example.security.spring.UserAuthentication;
+import scratch.cucumber.example.security.token.TokenFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,13 +39,13 @@ public class UserAuthenticationFactoryTest {
 
     private TokenFactory tokenFactory;
     private UserAuthenticationFactory userAuthenticationFactory;
-    private UsernameFactory usernameFactory;
+    private HttpServletRequestBinder<String> usernameFactory;
 
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() {
         tokenFactory = mock(TokenFactory.class);
-        usernameFactory = mock(UsernameFactory.class);
+        usernameFactory = mock(HttpServletRequestBinder.class);
 
         userAuthenticationFactory = new UserAuthenticationFactory(usernameFactory);
     }

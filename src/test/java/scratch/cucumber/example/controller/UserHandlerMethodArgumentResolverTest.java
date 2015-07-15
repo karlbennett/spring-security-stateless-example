@@ -25,7 +25,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import scratch.cucumber.example.data.UserRepository;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.security.servlet.UsernameFactory;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,16 +37,17 @@ import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class UserHandlerMethodArgumentResolverTest {
 
-    private UsernameFactory usernameFactory;
+    private HttpServletRequestBinder<String> httpServletRequestBinder;
     private UserRepository userRepository;
     private UserHandlerMethodArgumentResolver resolver;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() {
-        usernameFactory = mock(UsernameFactory.class);
+        httpServletRequestBinder = mock(HttpServletRequestBinder.class);
         userRepository = mock(UserRepository.class);
 
-        resolver = new UserHandlerMethodArgumentResolver(usernameFactory, userRepository);
+        resolver = new UserHandlerMethodArgumentResolver(httpServletRequestBinder, userRepository);
     }
 
     @Test
@@ -61,7 +62,7 @@ public class UserHandlerMethodArgumentResolverTest {
 
         // Given
         given(request.getNativeRequest()).willReturn(nativeRequest);
-        given(usernameFactory.retrieve(nativeRequest)).willReturn(username);
+        given(httpServletRequestBinder.retrieve(nativeRequest)).willReturn(username);
         given(userRepository.findByUsername(username)).willReturn(expected);
 
         // When

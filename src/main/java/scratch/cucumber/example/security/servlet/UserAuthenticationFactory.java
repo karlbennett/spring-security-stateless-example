@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package scratch.cucumber.example.security.spring;
+package scratch.cucumber.example.security.servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.security.servlet.UsernameFactory;
+import scratch.cucumber.example.security.spring.UserAuthentication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,24 +30,24 @@ import javax.servlet.http.HttpServletResponse;
  * @author Karl Bennett
  */
 @Component
-public class UserAuthenticationFactory implements AuthenticationFactory {
+public class UserAuthenticationFactory implements HttpServletRequestBinder<Authentication> {
 
-    private final UsernameFactory usernameFactory;
+    private final HttpServletRequestBinder<String> httpServletRequestBinder;
 
     @Autowired
-    public UserAuthenticationFactory(UsernameFactory usernameFactory) {
-        this.usernameFactory = usernameFactory;
+    public UserAuthenticationFactory(HttpServletRequestBinder<String> httpServletRequestBinder) {
+        this.httpServletRequestBinder = httpServletRequestBinder;
     }
 
     @Override
     public void add(HttpServletResponse response, Authentication authentication) {
-        usernameFactory.add(response, authentication.getName());
+        httpServletRequestBinder.add(response, authentication.getName());
     }
 
     @Override
     public UserAuthentication retrieve(HttpServletRequest request) {
 
-        final String username = usernameFactory.retrieve(request);
+        final String username = httpServletRequestBinder.retrieve(request);
 
         if (username != null) {
 

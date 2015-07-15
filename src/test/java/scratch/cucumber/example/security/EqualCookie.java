@@ -19,9 +19,6 @@ package scratch.cucumber.example.security;
 
 import javax.servlet.http.Cookie;
 
-/**
- * @author Karl Bennett
- */
 public class EqualCookie extends Cookie {
 
     private final String name;

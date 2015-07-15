@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +36,8 @@ public class StatelessAuthenticationSuccessHandlerTest {
     @Test
     public void Can_add_successful_authentication_to_the_response() throws IOException, ServletException {
 
-        final AuthenticationFactory authenticationFactory = mock(AuthenticationFactory.class);
+        @SuppressWarnings("unchecked")
+        final HttpServletRequestBinder<Authentication> authenticationFactory = mock(HttpServletRequestBinder.class);
         final SimpleUrlAuthenticationSuccessHandler delegate = mock(SimpleUrlAuthenticationSuccessHandler.class);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);

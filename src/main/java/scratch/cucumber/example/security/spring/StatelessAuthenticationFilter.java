@@ -17,7 +17,9 @@
 
 package scratch.cucumber.example.security.spring;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.filter.GenericFilterBean;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -31,21 +33,21 @@ import java.io.IOException;
  */
 public class StatelessAuthenticationFilter extends GenericFilterBean {
 
-    private final AuthenticationFactory authenticationFactory;
+    private final HttpServletRequestBinder<Authentication> authenticationBinder;
     private final SecurityContextHolder contextHolder;
 
     public StatelessAuthenticationFilter(
-        AuthenticationFactory authenticationFactory,
+        HttpServletRequestBinder<Authentication> authenticationBinder,
         SecurityContextHolder contextHolder
     ) {
-        this.authenticationFactory = authenticationFactory;
+        this.authenticationBinder = authenticationBinder;
         this.contextHolder = contextHolder;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
         throws IOException, ServletException {
-        contextHolder.getContext().setAuthentication(authenticationFactory.retrieve((HttpServletRequest) request));
+        contextHolder.getContext().setAuthentication(authenticationBinder.retrieve((HttpServletRequest) request));
         filterChain.doFilter(request, response);
     }
 }

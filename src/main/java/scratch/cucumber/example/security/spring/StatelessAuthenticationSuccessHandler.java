@@ -20,6 +20,7 @@ package scratch.cucumber.example.security.spring;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,14 +32,14 @@ import java.io.IOException;
  */
 public class StatelessAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final AuthenticationFactory authenticationFactory;
+    private final HttpServletRequestBinder<Authentication> authenticationBinder;
     private final SimpleUrlAuthenticationSuccessHandler delegate;
 
     public StatelessAuthenticationSuccessHandler(
-        AuthenticationFactory authenticationFactory,
+        HttpServletRequestBinder<Authentication> authenticationBinder,
         SimpleUrlAuthenticationSuccessHandler delegate
     ) {
-        this.authenticationFactory = authenticationFactory;
+        this.authenticationBinder = authenticationBinder;
         this.delegate = delegate;
     }
 
@@ -46,7 +47,7 @@ public class StatelessAuthenticationSuccessHandler implements AuthenticationSucc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        authenticationFactory.add(response, authentication);
+        authenticationBinder.add(response, authentication);
 
         delegate.onAuthenticationSuccess(request, response, authentication);
     }

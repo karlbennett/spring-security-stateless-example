@@ -19,7 +19,7 @@ package scratch.cucumber.example.security.servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import scratch.cucumber.example.security.TokenFactory;
+import scratch.cucumber.example.security.token.TokenFactory;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -29,13 +29,13 @@ import javax.servlet.http.HttpServletResponse;
  * @author Karl Bennett
  */
 @Component
-public class TokenUsernameFactory implements UsernameFactory {
+public class XAuthTokenHttpServletRequestBinder implements HttpServletRequestBinder<String> {
 
     private static final String X_AUTH_TOKEN = "X-AUTH-TOKEN";
     private final TokenFactory tokenFactory;
 
     @Autowired
-    public TokenUsernameFactory(TokenFactory tokenFactory) {
+    public XAuthTokenHttpServletRequestBinder(TokenFactory tokenFactory) {
         this.tokenFactory = tokenFactory;
     }
 

@@ -24,7 +24,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import scratch.cucumber.example.controller.UserHandlerMethodArgumentResolver;
 import scratch.cucumber.example.data.UserRepository;
-import scratch.cucumber.example.security.servlet.UsernameFactory;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
 public class RoutingConfiguration extends WebMvcConfigurerAdapter {
 
     @Autowired
-    private UsernameFactory usernameFactory;
+    private HttpServletRequestBinder<String> httpServletRequestBinder;
 
     @Autowired
     private UserRepository userRepository;
@@ -44,6 +44,6 @@ public class RoutingConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new UserHandlerMethodArgumentResolver(usernameFactory, userRepository));
+        argumentResolvers.add(new UserHandlerMethodArgumentResolver(httpServletRequestBinder, userRepository));
     }
 }

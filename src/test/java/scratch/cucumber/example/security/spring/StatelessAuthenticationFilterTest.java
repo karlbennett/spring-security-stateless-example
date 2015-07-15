@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -37,7 +38,8 @@ public class StatelessAuthenticationFilterTest {
     @Test
     public void Can_authenticate_request() throws IOException, ServletException {
 
-        final AuthenticationFactory authenticationFactory = mock(AuthenticationFactory.class);
+        @SuppressWarnings("unchecked")
+        final HttpServletRequestBinder<Authentication> authenticationFactory = mock(HttpServletRequestBinder.class);
         final SecurityContextHolder contextHolder = mock(SecurityContextHolder.class);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);

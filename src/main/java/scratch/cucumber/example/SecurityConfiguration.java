@@ -25,16 +25,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import scratch.cucumber.example.security.JwtTokenFactory;
-import scratch.cucumber.example.security.TokenFactory;
-import scratch.cucumber.example.security.spring.AuthenticationFactory;
+import scratch.cucumber.example.security.servlet.HttpServletRequestBinder;
 import scratch.cucumber.example.security.spring.SecurityContextHolder;
 import scratch.cucumber.example.security.spring.StatelessAuthenticationFilter;
 import scratch.cucumber.example.security.spring.StatelessAuthenticationSuccessHandler;
+import scratch.cucumber.example.security.token.JwtTokenFactory;
+import scratch.cucumber.example.security.token.TokenFactory;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -46,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private SecurityContextHolder securityContextHolder;
 
     @Autowired
-    private AuthenticationFactory authenticationFactory;
+    private HttpServletRequestBinder<Authentication> authenticationBinder;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -75,13 +76,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .loginPage("/spring/signIn").permitAll()
             // Override the sign in success handler with our stateless implementation. This will update the response
             // with any headers and cookies that are required for subsequent authenticated requests.
-            .successHandler(new StatelessAuthenticationSuccessHandler(authenticationFactory, delegate));
+            .successHandler(new StatelessAuthenticationSuccessHandler(authenticationBinder, delegate));
         http.logout().logoutUrl("/spring/signOut").logoutSuccessUrl("/spring/");
         // Add our stateless authentication filter before the default sign in filter. The default sign in filter is
         // still used for the initial sign in, but if a user is authenticated we need to acknowledge this before it is
         // reached.
         http.addFilterBefore(
-            new StatelessAuthenticationFilter(authenticationFactory, securityContextHolder),
+            new StatelessAuthenticationFilter(authenticationBinder, securityContextHolder),
             UsernamePasswordAuthenticationFilter.class
         );
     }
