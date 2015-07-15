@@ -17,13 +17,10 @@
 
 package scratch.cucumber.example;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -32,24 +29,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import scratch.cucumber.example.domain.UserFactory;
-import scratch.cucumber.example.domain.servlet.ApplicationFormUrlEncodedUserFactory;
-import scratch.cucumber.example.domain.servlet.ApplicationJsonUserFactory;
-import scratch.cucumber.example.domain.servlet.ContentTypeUserFactory;
-import scratch.cucumber.example.domain.spring.MultiValueMapUserFactory;
 import scratch.cucumber.example.security.JwtTokenFactory;
 import scratch.cucumber.example.security.TokenFactory;
 import scratch.cucumber.example.security.spring.AuthenticationFactory;
-import scratch.cucumber.example.security.spring.HttpServletRequestHttpInputMessageFactory;
 import scratch.cucumber.example.security.spring.SecurityContextHolder;
 import scratch.cucumber.example.security.spring.StatelessAuthenticationFilter;
 import scratch.cucumber.example.security.spring.StatelessAuthenticationSuccessHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -107,20 +93,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // verification of all authenticated requests are stateless, that is it does not require access to any internal
         // or external state.
         auth.userDetailsService(userDetailsService).passwordEncoder(NoOpPasswordEncoder.getInstance());
-    }
-
-    @Bean
-    public UserFactory<HttpServletRequest> httpServletRequestUserFactory() {
-        return new ContentTypeUserFactory(new HashMap<MediaType, UserFactory<HttpServletRequest>>() {{
-            put(
-                APPLICATION_FORM_URLENCODED,
-                new ApplicationFormUrlEncodedUserFactory(
-                    new HttpServletRequestHttpInputMessageFactory(),
-                    new FormHttpMessageConverter(),
-                    new MultiValueMapUserFactory()
-                ));
-            put(APPLICATION_JSON, new ApplicationJsonUserFactory(new ObjectMapper()));
-        }});
     }
 
     @Bean

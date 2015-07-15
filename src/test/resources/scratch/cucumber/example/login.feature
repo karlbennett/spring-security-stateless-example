@@ -15,6 +15,6 @@ Feature: It is possible for a user to sign in
     Then the user should be on the home page
     And the user should be signed in as "<username>"
 
-  Examples:
-    | username | password      |
-    | TestUser | test password |
+    Examples:
+      | username | password      |
+      | TestUser | test password |

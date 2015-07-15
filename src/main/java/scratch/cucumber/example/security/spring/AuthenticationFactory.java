@@ -18,7 +18,6 @@
 package scratch.cucumber.example.security.spring;
 
 import org.springframework.security.core.Authentication;
-import scratch.cucumber.example.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,10 +26,6 @@ import javax.servlet.http.HttpServletResponse;
  * @author Karl Bennett
  */
 public interface AuthenticationFactory {
-
-    Authentication create(HttpServletRequest request);
-
-    Authentication create(User user);
 
     void add(HttpServletResponse response, Authentication authentication);
 

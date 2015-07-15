@@ -18,11 +18,9 @@
 package scratch.cucumber.example.security.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.domain.UserFactory;
 import scratch.cucumber.example.security.servlet.UsernameFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,30 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class UserAuthenticationFactory implements AuthenticationFactory {
 
-    private final UserFactory<HttpServletRequest> userFactory;
     private final UsernameFactory usernameFactory;
 
     @Autowired
-    public UserAuthenticationFactory(
-        UserFactory<HttpServletRequest> userFactory,
-        UsernameFactory usernameFactory
-    ) {
-        this.userFactory = userFactory;
+    public UserAuthenticationFactory(UsernameFactory usernameFactory) {
         this.usernameFactory = usernameFactory;
-    }
-
-    @Override
-    public UsernamePasswordAuthenticationToken create(HttpServletRequest request) {
-
-        final User user = userFactory.create(request);
-        // Must return a UsernamePasswordAuthenticationToken so that Spring Security uses the correct authentication
-        // provider.
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-    }
-
-    @Override
-    public UserAuthentication create(User user) {
-        return new UserAuthentication(user);
     }
 
     @Override

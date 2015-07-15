@@ -19,10 +19,7 @@ package scratch.cucumber.example.security.spring;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import scratch.cucumber.example.domain.User;
-import scratch.cucumber.example.domain.UserFactory;
 import scratch.cucumber.example.security.TokenFactory;
 import scratch.cucumber.example.security.servlet.UsernameFactory;
 
@@ -36,12 +33,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.unitils.reflectionassert.ReflectionAssert.assertPropertyReflectionEquals;
 import static shiver.me.timbers.data.random.RandomStrings.someString;
 
 public class UserAuthenticationFactoryTest {
 
-    private UserFactory<HttpServletRequest> userFactory;
     private TokenFactory tokenFactory;
     private UserAuthenticationFactory userAuthenticationFactory;
     private UsernameFactory usernameFactory;
@@ -49,47 +44,10 @@ public class UserAuthenticationFactoryTest {
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() {
-        userFactory = mock(UserFactory.class);
         tokenFactory = mock(TokenFactory.class);
         usernameFactory = mock(UsernameFactory.class);
 
-        userAuthenticationFactory = new UserAuthenticationFactory(userFactory, usernameFactory);
-    }
-
-    @Test
-    public void Can_create_an_authentication_from_a_request() {
-
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-
-        final User user = mock(User.class);
-        final String username = someString();
-        final String password = someString();
-
-        // Given
-        given(userFactory.create(request)).willReturn(user);
-        given(user.getUsername()).willReturn(username);
-        given(user.getPassword()).willReturn(password);
-
-        // When
-        final UsernamePasswordAuthenticationToken actual = userAuthenticationFactory.create(request);
-
-        // Then
-        assertThat(actual.getName(), equalTo(username));
-        assertThat(actual.getPrincipal().toString(), equalTo(username));
-        assertThat(actual.getCredentials().toString(), equalTo(password));
-    }
-
-    @Test
-    public void Can_create_an_authentication_from_a_user() {
-
-        // Given
-        final User user = mock(User.class);
-
-        // When
-        final UserAuthentication actual = userAuthenticationFactory.create(user);
-
-        // Then
-        assertPropertyReflectionEquals("user", user, actual);
+        userAuthenticationFactory = new UserAuthenticationFactory(usernameFactory);
     }
 
     @Test
